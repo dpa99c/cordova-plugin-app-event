@@ -24,6 +24,7 @@
 #import "AppDelegate.h"
 
 extern NSString* const UIApplicationRegisterUserNotificationSettings;
+extern NSString* const UIApplicationContinueUserActivity;
 
 @interface AppDelegate (APPAppEvent)
 

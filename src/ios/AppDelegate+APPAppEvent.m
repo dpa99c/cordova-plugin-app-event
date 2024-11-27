@@ -28,6 +28,7 @@
 #import <objc/runtime.h>
 
 NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationRegisterUserNotificationSettings";
+NSString* const UIApplicationContinueUserActivity = @"UIApplicationContinueUserActivity";
 
 @implementation AppDelegate (APPAppEvent)
 
@@ -40,36 +41,33 @@ NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationR
  */
 + (void) load
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
-    [self exchange_methods:@selector(application:didRegisterUserNotificationSettings:)
-                  swizzled:@selector(swizzled_application:didRegisterUserNotificationSettings:)];
-#endif
+  [self exchange_methods:@selector(application:didRegisterUserNotificationSettings:)
+                swizzled:@selector(swizzled_application:didRegisterUserNotificationSettings:)];
 
-#if CORDOVA_VERSION_MIN_REQUIRED >= 40000
-    [self exchange_methods:@selector(application:didReceiveLocalNotification:)
-                  swizzled:@selector(swizzled_application:didReceiveLocalNotification:)];
-#endif
+  [self exchange_methods:@selector(application:didReceiveLocalNotification:)
+                swizzled:@selector(swizzled_application:didReceiveLocalNotification:)];
+
+  [self exchange_methods:@selector(application:continueUserActivity:restorationHandler:)
+                swizzled:@selector(swizzled_application:continueUserActivity:restorationHandler:)];
 }
 
 #pragma mark -
 #pragma mark Delegate
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
 /**
  * Tells the delegate what types of notifications may be used
  * to get the user’s attention.
  */
-- (void)           swizzled_application:(UIApplication*)application
-    didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
+- (void) swizzled_application:(UIApplication*)application
+didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
 {
-    // re-post (broadcast)
-    [self postNotificationName:UIApplicationRegisterUserNotificationSettings object:settings];
-    // This actually calls the original method over in AppDelegate
-    [self swizzled_application:application didRegisterUserNotificationSettings:settings];
+  // re-post (broadcast)
+  [self postNotificationName:UIApplicationRegisterUserNotificationSettings object:settings];
+  // This actually calls the original method over in AppDelegate
+  [self swizzled_application:application didRegisterUserNotificationSettings:settings];
 }
-#endif
 
-#if CORDOVA_VERSION_MIN_REQUIRED >= 40000
+
 /**
  * Repost all local notification using the default NSNotificationCenter so
  * multiple plugins may respond.
@@ -77,12 +75,25 @@ NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationR
 - (void)   swizzled_application:(UIApplication*)application
     didReceiveLocalNotification:(UILocalNotification*)notification
 {
-    // re-post (broadcast)
-    [self postNotificationName:CDVLocalNotification object:notification];
-    // This actually calls the original method over in AppDelegate
-    [self swizzled_application:application didReceiveLocalNotification:notification];
+  // re-post (broadcast)
+  [self postNotificationName:CDVLocalNotification object:notification];
+  // This actually calls the original method over in AppDelegate
+  [self swizzled_application:application didReceiveLocalNotification:notification];
 }
-#endif
+
+/**
+  * Repost all user activity using the default NSNotificationCenter so
+  * multiple plugins may respond.
+  */
+- (BOOL)swizzled_application:(UIApplication *)application
+        continueUserActivity:(NSUserActivity *)userActivity
+          restorationHandler:(void (^)(NSArray *))restorationHandler
+{
+    // re-post (broadcast)
+    [self postNotificationName:UIApplicationContinueUserActivity object:userActivity];
+    // This actually calls the original method over in AppDelegate
+    return [self swizzled_application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+}
 
 #pragma mark -
 #pragma mark Core
