@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2024 by Working Edge Ltd. All rights reserved.
  * Copyright (c) 2013-2017 by appPlant GmbH. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
@@ -23,7 +24,8 @@
 
 #import "AppDelegate.h"
 
-extern NSString* const UIApplicationRegisterUserNotificationSettings;
+extern NSString* const UIApplicationDidFinishLaunchingNotification;
+extern NSString* const UIApplicationDidReceiveLocalNotification;
 extern NSString* const UIApplicationContinueUserActivity;
 
 @interface AppDelegate (APPAppEvent)

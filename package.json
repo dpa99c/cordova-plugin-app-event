@@ -1,17 +1,16 @@
 {
-  "name": "cordova-plugin-app-event",
-  "version": "1.2.2",
-  "description": "Broadcasts UIApplicationDelegate events",
+  "name": "cordova-plugin-ios-app-delegate-events",
+  "version": "2.0.0",
+  "description": "Broadcasts UIApplicationDelegate events for consumption by other plugins",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/katzer/cordova-plugin-app-event.git"
+    "url": "git+https://github.com/dpa99c/cordova-plugin-ios-app-delegate-events.git"
   },
   "keywords": [
-    "appplant",
     "UIApplicationDelegate",
     "didRegisterUserNotificationSettings",
     "didReceiveLocalNotification",
@@ -20,7 +19,7 @@
     "ecosystem:cordova"
   ],
   "cordova": {
-    "id": "cordova-plugin-app-event",
+    "id": "cordova-plugin-ios-app-delegate-events",
     "platforms": [
       "ios"
     ]
@@ -28,16 +27,14 @@
   "platforms": [
     "ios"
   ],
-  "engines": [
-    {
-      "name": "cordova",
-      "version": ">=3.6.0"
-    }
-  ],
-  "author": "Sebastián Katzer",
+  "engines": {
+    "cordova": ">=12.0.0",
+    "cordova-ios": ">=6.0.0"
+  },
+  "author": "Dave Alden",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/katzer/cordova-plugin-app-event/issues"
+    "url": "https://github.com/dpa99c/cordova-plugin-ios-app-delegate-events/issues"
   },
-  "homepage": "https://github.com/katzer/cordova-plugin-app-event#readme"
+  "homepage": "https://github.com/dpa99c/cordova-plugin-ios-app-delegate-events#readme"
 }

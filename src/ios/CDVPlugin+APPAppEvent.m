@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2024 by Working Edge Ltd. All rights reserved.
  * Copyright (c) 2013-2017 by appPlant GmbH. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
@@ -44,9 +45,7 @@ static IMP orig_pluginInitialize;
  */
 + (void) initialize
 {
-    // To keep compatibility with local-notifiations v0.8.4
-    if ([NSStringFromClass(self) isEqualToString:@"APPLocalNotification"]
-        || [self conformsToProtocol:@protocol(APPAppEventDelegate)])
+    if ([self conformsToProtocol:@protocol(APPAppEventDelegate)])
     {
         orig_pluginInitialize = [self exchange_init_methods];
     }
@@ -65,16 +64,16 @@ void swizzled_pluginInitialize(id self, SEL _cmd)
         orig_pluginInitialize = NULL;
     }
 
-    [self addObserver:NSSelectorFromString(@"didReceiveLocalNotification:")
-                 name:CDVLocalNotification
-               object:NULL];
-
     [self addObserver:NSSelectorFromString(@"didFinishLaunchingWithOptions:")
-                 name:UIApplicationDidFinishLaunchingNotification
+                     name:UIApplicationDidFinishLaunchingNotification
+                   object:NULL];
+
+    [self addObserver:NSSelectorFromString(@"didReceiveLocalNotification:")
+                 name:UIApplicationDidReceiveLocalNotification
                object:NULL];
 
-    [self addObserver:NSSelectorFromString(@"didRegisterUserNotificationSettings:")
-                 name:UIApplicationRegisterUserNotificationSettings
+    [self addObserver:NSSelectorFromString(@"continueUserActivity:")
+                 name:UIApplicationContinueUserActivity
                object:NULL];
 }
 

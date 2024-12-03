@@ -1,5 +1,9 @@
 ChangeLog
 ---------
+#### Version 2.0.0 
+- Change plugin ID to `cordova-plugin-ios-app-delegate-events` and maintainer to @dpa99c
+- Add support for more app delegate methods: `continueUserActivity`
+- Remove support for deprecated delegate method [didRegisterUserNotificationSettings](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623022-application?language=objc)
 
 #### Version 1.2.2 (25.09.2019)
 - Fix breaks on cordova-ios 5.x

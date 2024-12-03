@@ -1,33 +1,40 @@
-[![npm version](https://badge.fury.io/js/cordova-plugin-app-event.svg)](http://badge.fury.io/js/cordova-plugin-app-event)
+[![npm version](https://badge.fury.io/js/cordova-plugin-ios-app-delegate-events.svg)](http://badge.fury.io/js/cordova-plugin-ios-app-delegate-events)
 
-Cordova App-Event Plugin
-========================
+Cordova App Delegate Events Plugin for iOS
+==========================================
 
-The essential purpose of that plugin is to broadcast iOS-specific application events, so that 3rd party plugins can listen to them.
+The purpose of this plugin is to broadcast iOS-specific application delegate events, so that 3rd party plugins can listen to them.
 
-Its mainly used as an internal dependency for the [LocalNotification][local_notification_plugin] and [Badge][badge_plugin] plugin. But can be used by any other plugin also. Feel free to submit an PR to broadcast additional events.
+The reason is that iOS applications are only allowed to register one instance of each delegate method so if 2 or more plugins declare an instance of the same delegate method, only one of these will be called at run-time, leading to some plugins failing to function correctly.
 
-As of right now its possible to add observers for these events:
+This plugin solves this problem by implementing its own instances of supported app delegate methods, then rebroadcasts calls to the method as events via the NSNotificationCenter which multiple other plugins can register to listen for and handle simultaneously.
+
+The instances of app delegate methods defined by this plugin use [method swizzling](https://nshipster.com/method-swizzling/) in case any other plugins define the same delegate methods in order to avoid overwriting them.
+
+As of right now it's possible to add observers for these events:
 - [didFinishLaunchingWithOptions][didFinishLaunchingWithOptions]
-- [didRegisterUserNotificationSettings][didRegisterUserNotificationSettings]
 - [didReceiveLocalNotification][didReceiveLocalNotification]
+- [continueUserActivity][continueUserActivity]
 
+Feel free to submit an PR to broadcast additional events.
 
-## Usage
+# Usage
 
-#### 1. Add and install the plugin as an dependency
-Once you have added the plugin as an dependency you can add observers for them.
+To make use of the app delegate events in your plugin, follow these steps:
+
+## 1. Add and install the plugin as a dependency
+Add this plugin as a dependency of your plugin.
 
 ```xml
 <!-- plugin.xml -->
 
-<dependency id="cordova-plugin-app-event" />
+<dependency id="cordova-plugin-ios-app-delegate-events" />
 ```
 
-#### 2. Add the protocol to the plugin's interface
-As first the plugin needs to indicate interest to receivce app events by adding the `APPAppEventDelegate` protocol.
+## 2. Add the protocol to the plugin's interface
+Indicate your plugin's interest to receive app events by adding the `APPAppEventDelegate` protocol.
 
-__Note:__ Required for version 1.2.0 or newer!
+### Objective-C plugin
 
 ```obj-c
 // MyCordovaPlugin.h
@@ -44,45 +51,91 @@ __Note:__ Required for version 1.2.0 or newer!
 @end
 ```
 
-#### 3. Add implementations for the delegated events
-To add an observer you need to implement the [UIApplicationDelegate Protocol][app_delegate_protocol]. Implementations from your _AppDelegate_ class don't get overwritten!
+### Swift plugin
 
-For the `didReceiveLocalNotification` event you would need to add that method.
+```obj-c
+// MyCordovaPlugin-Bridging-Header.h
+
+#import "APPAppEventDelegate.h"
+
+...
+
+@end
+```
+
+```swift
+// MyCordovaPlugin.swift
+
+@objc(MyCordovaPlugin) class MyCordovaPlugin: CDVPlugin, APPAppEventDelegate {
+...
+}
+
+```
+
+## 3. Add observer methods for the delegated events
+To add an observer you need to define a method to handle the app delegate event and register it as a listener for that event during plugin initialization.
+
+For example, to receive the `continueUserActivity` event, you'd register a method to handle `UIApplicationContinueUserActivity` events:
+
+### Objective-C plugin
 
 ```obj-c
 // MyCordovaPlugin.m
 
+#import "AppDelegate+APPAppEvent.h"
+
 @implementation MyCordovaPlugin
 
-- (void) didReceiveLocalNotification:(NSNotification*)localNotification
-{
-    ...
+- (void)pluginInitialize {
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(myContinueUserActivityHandler:) name:UIApplicationContinueUserActivity object:nil];
+}
+
+- (void) myContinueUserActivityHandler:(NSNotification*)notification{
+  
+     NSUserActivity* userActivity = notification.object;
+     
+     // Do something with the user activity
 }
 
 @end
 ```
 
+### Swift plugin
 
-## Contributing
+```swift
+// MyCordovaPlugin.swift
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+@objc(MyCordovaPlugin) class MyCordovaPlugin: CDVPlugin, APPAppEventDelegate {
+
+    override func pluginInitialize() {
+        NotificationCenter.default.addObserver(
+          self,
+          selector: #selector(myContinueUserActivityHandler(_:)),
+          name: NSNotification.Name(rawValue: UIApplicationContinueUserActivity),
+          object: nil
+        )
+    }
+    
+    @objc(myContinueUserActivityHandler:) func myContinueUserActivityHandler(_ notification: NSNotification) {
+        let userActivity = notification.object as! NSUserActivity
+        
+        // Do something with the user activity
+    }
+}
+
+```
 
 
-## License
+# License
 
 This software is released under the [Apache 2.0 License][apache2_license].
 
+© 2024 Working Edge Ltd. All rights reserved
 © 2013-2017 appPlant GmbH, Inc. All rights reserved
 
 
-[local_notification_plugin]: https://github.com/katzer/cordova-plugin-local-notifications
-[badge_plugin]: https://github.com/katzer/cordova-plugin-badge
-[didFinishLaunchingWithOptions]: https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/index.html?hl=ar#//apple_ref/occ/intfm/UIApplicationDelegate/application:didFinishLaunchingWithOptions:
-[didRegisterUserNotificationSettings]: https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/index.html?hl=ar#//apple_ref/occ/intfm/UIApplicationDelegate/application:didRegisterUserNotificationSettings:
-[didReceiveLocalNotification]: https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/index.html?hl=ar#//apple_ref/occ/intfm/UIApplicationDelegate/application:didReceiveLocalNotification:
+[didFinishLaunchingWithOptions]: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application?language=objc
+[didReceiveLocalNotification]: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622930-application?language=objc
+[continueUserActivity]: https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=objc
 [app_delegate_protocol]: https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/
 [apache2_license]: http://opensource.org/licenses/Apache-2.0

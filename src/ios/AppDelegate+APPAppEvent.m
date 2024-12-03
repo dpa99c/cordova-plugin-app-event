@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2024 by Working Edge Ltd. All rights reserved.
  * Copyright (c) 2013-2017 by appPlant GmbH. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
@@ -27,6 +28,7 @@
 #import <Availability.h>
 #import <objc/runtime.h>
 
+NSString* const UIApplicationDidFinishLaunchingNotification = @"UIApplicationDidFinishLaunchingNotification";
 NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationRegisterUserNotificationSettings";
 NSString* const UIApplicationContinueUserActivity = @"UIApplicationContinueUserActivity";
 
@@ -41,8 +43,8 @@ NSString* const UIApplicationContinueUserActivity = @"UIApplicationContinueUserA
  */
 + (void) load
 {
-  [self exchange_methods:@selector(application:didRegisterUserNotificationSettings:)
-                swizzled:@selector(swizzled_application:didRegisterUserNotificationSettings:)];
+  [self exchange_methods:@selector(application:didFinishLaunchingWithOptions:)
+                swizzled:@selector(swizzled_application:didFinishLaunchingWithOptions:)];
 
   [self exchange_methods:@selector(application:didReceiveLocalNotification:)
                 swizzled:@selector(swizzled_application:didReceiveLocalNotification:)];
@@ -55,16 +57,15 @@ NSString* const UIApplicationContinueUserActivity = @"UIApplicationContinueUserA
 #pragma mark Delegate
 
 /**
- * Tells the delegate what types of notifications may be used
- * to get the user’s attention.
+ * Repost finish of app launching
  */
 - (void) swizzled_application:(UIApplication*)application
-didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
+didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions
 {
   // re-post (broadcast)
-  [self postNotificationName:UIApplicationRegisterUserNotificationSettings object:settings];
+  [self postNotificationName:UIApplicationDidFinishLaunchingNotification object:launchOptions];
   // This actually calls the original method over in AppDelegate
-  [self swizzled_application:application didRegisterUserNotificationSettings:settings];
+  [self swizzled_application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
 
@@ -76,7 +77,7 @@ didRegisterUserNotificationSettings:(UIUserNotificationSettings*)settings
     didReceiveLocalNotification:(UILocalNotification*)notification
 {
   // re-post (broadcast)
-  [self postNotificationName:CDVLocalNotification object:notification];
+  [self postNotificationName:UIApplicationDidReceiveLocalNotification object:notification];
   // This actually calls the original method over in AppDelegate
   [self swizzled_application:application didReceiveLocalNotification:notification];
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
+ * Copyright (c) 2024 by Working Edge Ltd. All rights reserved.
  * Copyright (c) 2013-2017 by appPlant GmbH. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
@@ -21,23 +22,25 @@
  * limitations under the License.
  *
  * @APPPLANT_LICENSE_HEADER_END@
+ *
 -->
 
-<plugin id="cordova-plugin-app-event"
+<plugin id="cordova-plugin-ios-app-delegate-events"
         xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        version="1.2.2">
+        version="2.0.0">
 
-    <name>Application Events</name>
-    <description>Broadcasts various events to make them available for 3rd parties</description>
-    <keywords>appplant UIApplicationDelegate didRegisterUserNotificationSettings didReceiveLocalNotification didFinishLaunchingWithOptions</keywords>
-    <repo>https://github.com/katzer/cordova-plugin-app-event.git</repo>
+    <name>iOS App Delegate Events</name>
+    <description>Broadcasts app delegate events to make them available to 3rd party plugins</description>
+    <keywords>UIApplicationDelegate didRegisterUserNotificationSettings didReceiveLocalNotification didFinishLaunchingWithOptions continueUserActivity</keywords>
+    <repo>https://github.com/dpa99c/cordova-plugin-ios-app-delegate-events.git</repo>
     <license>Apache 2.0</license>
-    <author>Sebastián Katzer</author>
+    <author>Dave Alden</author>
 
     <!-- cordova -->
     <engines>
-        <engine name="cordova" version=">=3.6.0" />
+        <engine name="cordova" version=">=12.0.0" />
+        <engine name="cordova-ios" version=">=6.0.0" />
     </engines>
 
     <!-- ios -->
