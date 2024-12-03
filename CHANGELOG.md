@@ -1,5 +1,7 @@
 ChangeLog
 ---------
+#### Version 2.0.1 
+* fix reference to UIApplicationDidReceiveLocalNotification
 #### Version 2.0.0 
 - Change plugin ID to `cordova-plugin-ios-app-delegate-events` and maintainer to @dpa99c
 - Add support for more app delegate methods: `continueUserActivity`

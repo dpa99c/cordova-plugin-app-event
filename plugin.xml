@@ -28,7 +28,7 @@
 <plugin id="cordova-plugin-ios-app-delegate-events"
         xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        version="2.0.0">
+        version="2.0.1">
 
     <name>iOS App Delegate Events</name>
     <description>Broadcasts app delegate events to make them available to 3rd party plugins</description>

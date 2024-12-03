@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-ios-app-delegate-events",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Broadcasts UIApplicationDelegate events for consumption by other plugins",
   "main": "index.js",
   "scripts": {
