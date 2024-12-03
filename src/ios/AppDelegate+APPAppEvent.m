@@ -29,7 +29,7 @@
 #import <objc/runtime.h>
 
 NSString* const UIApplicationDidFinishLaunchingNotification = @"UIApplicationDidFinishLaunchingNotification";
-NSString* const UIApplicationRegisterUserNotificationSettings = @"UIApplicationRegisterUserNotificationSettings";
+NSString* const UIApplicationDidReceiveLocalNotification = @"UIApplicationDidReceiveLocalNotification";
 NSString* const UIApplicationContinueUserActivity = @"UIApplicationContinueUserActivity";
 
 @implementation AppDelegate (APPAppEvent)
