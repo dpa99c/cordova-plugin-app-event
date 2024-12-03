@@ -57,6 +57,7 @@ Indicate your plugin's interest to receive app events by adding the `APPAppEvent
 // MyCordovaPlugin-Bridging-Header.h
 
 #import "APPAppEventDelegate.h"
+#import "AppDelegate+APPAppEvent.h"
 
 ...
 
@@ -87,7 +88,11 @@ For example, to receive the `continueUserActivity` event, you'd register a metho
 @implementation MyCordovaPlugin
 
 - (void)pluginInitialize {
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(myContinueUserActivityHandler:) name:UIApplicationContinueUserActivity object:nil];
+  [[NSNotificationCenter defaultCenter] 
+    addObserver:self 
+    selector:@selector(myContinueUserActivityHandler:) 
+    name:UIApplicationContinueUserActivity object:nil
+  ];
 }
 
 - (void) myContinueUserActivityHandler:(NSNotification*)notification{
